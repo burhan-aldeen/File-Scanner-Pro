@@ -1,0 +1,754 @@
+javascript:(function(){
+  var AUTHOR = 'Burhan ALDeen';
+  var VER = '4.1';
+
+  var FILES = [
+    '.git/config','.git/HEAD','.git/COMMIT_EDITMSG','.git/index',
+    '.git/packed-refs','.git/refs/heads/master','.git/refs/heads/main',
+    '.gitignore','.gitmodules',
+    '.env','.env.local','.env.dev','.env.development',
+    '.env.prod','.env.production','.env.staging','.env.backup',
+    '.env.example','.env.sample',
+    '.htaccess','.htpasswd','web.config','httpd.conf',
+    'nginx.conf','apache2.conf',
+    'phpinfo.php','info.php','php.php','test.php','debug.php',
+    'config.php','configuration.php','settings.php','wp-config.php',
+    'wp-config.php.bak','wp-config.old','config.php.bak',
+    'artisan','composer.json','composer.lock',
+    'package.json','package-lock.json','yarn.lock','.npmrc',
+    'requirements.txt','setup.py','Pipfile','Pipfile.lock',
+    'manage.py','settings.py','local_settings.py',
+    'Gemfile','Gemfile.lock','.bundle/config',
+    'Dockerfile','docker-compose.yml','docker-compose.yaml',
+    '.dockerignore','.travis.yml','.circleci/config.yml',
+    'Jenkinsfile','.github/workflows/main.yml',
+    'kubernetes.yml','k8s.yml','deployment.yml',
+    'terraform.tfvars','terraform.tfstate','.terraform/terraform.tfstate',
+    'credentials.json','service-account.json',
+    'gcloud.json','aws.json','.aws/credentials',
+    'id_rsa','id_rsa.pub','id_ed25519','id_ecdsa',
+    '.ssh/id_rsa','.ssh/config',
+    'backup.sql','dump.sql','database.sql','db.sql','data.sql',
+    'backup.sql.gz','backup.tar.gz','db_backup.sql',
+    'backup.zip','backup.tar','www.zip','site.zip',
+    'website.zip','html.zip','public.zip',
+    'error.log','access.log','debug.log','app.log',
+    'logs/error.log','storage/logs/laravel.log',
+    'var/log/nginx/error.log',
+    'admin/','admin/login','admin/index.php',
+    'wp-admin/','phpmyadmin/','pma/','db/','mysql/',
+    'adminer.php','dbadmin/',
+    'api/','swagger.json','swagger.yaml','openapi.json','openapi.yaml',
+    'api-docs','api-docs.json',
+    'graphql','graphiql','playground',
+    'wp-json/wp/v2/users','xmlrpc.php',
+    'sites/default/settings.php','sites/default/files/',
+    'server-status','server-info',
+    '.well-known/security.txt','.well-known/acme-challenge/',
+    'crossdomain.xml','robots.txt','sitemap.xml','humans.txt',
+    '.DS_Store','thumbs.db',
+    'web.xml','applicationContext.xml',
+    'config.yml','config.yaml','config.json',
+    'database.yml','database.yaml',
+    'secrets.yml','secrets.json',
+    'private.key','server.key','private.pem',
+    'api/health','api/status','api/version','api/config','api/admin/users',
+    'api/v1/','api/v2/',
+    'graphql?query=%7B__schema%7Btypes%7Bname%7D%7D%7D',
+    'actuator/health','actuator/info','actuator/env','actuator/metrics',
+    'swagger-ui.html','v2/api-docs','v3/api-docs',
+    'administrator/','backend/','dashboard/','cms/','panel/','manager/','portal/',
+    '.env.staging','.env.testing','.env.ci','.env.docker',
+    'docker-compose.override.yml',
+    'webpack.config.js','tsconfig.json','babel.config.js',
+    '.eslintrc.json','.prettierrc','.gitattributes','.editorconfig',
+    'my.cnf','.pgpass','redis.conf','mongod.conf',
+    'pom.xml','build.gradle','go.mod','go.sum',
+    'Cargo.toml','Cargo.lock',
+    '.gitlab-ci.yml','azure-pipelines.yml',
+    'bitbucket-pipelines.yml','serverless.yml',
+    'Vagrantfile','terraform.tfstate.backup',
+    'README.md','CHANGELOG.md','LICENSE',
+    'Makefile','Procfile','supervisord.conf',
+    '.kube/config','config.inc.php','database.ini','.netrc','composer.auth.json',
+    'console','.env.prod.local',
+    'health','healthcheck','status',
+    'metrics','info','ping',
+    'login','register','forgot',
+    'otp','2fa','mfa',
+    'callback','webhook','hook',
+    'export','import','upload',
+    'search','query','filter',
+    'sort','order','limit',
+    'page','offset','cursor',
+    'token','refresh','auth',
+    'saml','oauth','openid',
+    'redirect',
+    '.gitkeep','.gitattributes',
+    '.helmignore','Chart.yaml','values.yaml',
+    'helm/','charts/',
+    '.vault_token','vault/',
+    'docker-compose.prod.yml','docker-compose.dev.yml',
+    'wp-config-sample.php',
+    'wp-content/debug.log',
+    'wp-content/plugins/','wp-content/uploads/',
+    'wp-includes/',
+    'error','404','500',
+    'index.html','index.php',
+    'default.aspx','global.asax',
+    'WebResource.axd',
+    'elfinder/','ckeditor/','fckeditor/',
+    'tinyfilemanager.php','filemanager/',
+    'upload.php','connector.php',
+    '.env.production.local',
+    '.aws/config','.aws/credentials.bak',
+    '.secret','secret.txt',
+    '.git-credentials',
+    '.git/config.bak','.git-rewrite/'
+  ];
+
+  var SIGS = [
+    { pat:'[core]', sev:'critical', label:'Git config' },
+    { pat:'repositoryformatversion', sev:'critical', label:'Git repo' },
+    { pat:'ref: refs/heads', sev:'critical', label:'Git HEAD' },
+    { pat:'DB_PASSWORD', sev:'critical', label:'DB password' },
+    { pat:'DB_HOST', sev:'critical', label:'DB host' },
+    { pat:'SECRET_KEY', sev:'critical', label:'Secret key' },
+    { pat:'APP_KEY=', sev:'critical', label:'App key' },
+    { pat:'AWS_ACCESS', sev:'critical', label:'AWS creds' },
+    { pat:'AWS_SECRET', sev:'critical', label:'AWS secret' },
+    { pat:"define('DB_", sev:'critical', label:'PHP DB creds' },
+    { pat:'define("DB_', sev:'critical', label:'PHP DB creds' },
+    { pat:'$db_pass', sev:'critical', label:'PHP DB pass' },
+    { pat:'-----BEGIN', sev:'critical', label:'Private key PEM' },
+    { pat:'PRIVATE KEY', sev:'critical', label:'Private key' },
+    { pat:'AccessKeyId', sev:'critical', label:'AWS key ID' },
+    { pat:'SecretAccessKey', sev:'critical', label:'AWS secret' },
+    { pat:'INSERT INTO', sev:'critical', label:'SQL dump' },
+    { pat:'CREATE TABLE', sev:'high', label:'SQL schema' },
+    { pat:'mysqldump', sev:'critical', label:'mysqldump' },
+    { pat:'MYSQL_PASSWORD', sev:'critical', label:'Docker DB pass' },
+    { pat:'POSTGRES_PASSWORD', sev:'critical', label:'Postgres pass' },
+    { pat:'"type": "service_account"', sev:'critical', label:'GCP service acct' },
+    { pat:'client_secret', sev:'critical', label:'OAuth secret' },
+    { pat:'phpinfo()', sev:'high', label:'phpinfo' },
+    { pat:'PHP Version', sev:'high', label:'phpinfo leak' },
+    { pat:'sk_live_', sev:'critical', label:'Stripe live key' },
+    { pat:'pk_live_', sev:'critical', label:'Stripe live key' },
+    { pat:'sk_test_', sev:'high', label:'Stripe test key' },
+    { pat:'ghp_', sev:'critical', label:'GitHub token' },
+    { pat:'github_pat_', sev:'critical', label:'GitHub PAT' },
+    { pat:'gho_', sev:'critical', label:'GitHub OAuth' },
+    { pat:'xoxb-', sev:'critical', label:'Slack bot token' },
+    { pat:'xoxp-', sev:'critical', label:'Slack user token' },
+    { pat:'xapp-', sev:'critical', label:'Slack app token' },
+    { pat:'AKIA', sev:'critical', label:'AWS access key' },
+    { pat:'DefaultEndpointsProtocol', sev:'critical', label:'Azure conn' },
+    { pat:'AccountKey', sev:'critical', label:'Azure key' },
+    { pat:'AccountName', sev:'high', label:'Azure account' },
+    { pat:'smtp_password', sev:'critical', label:'SMTP password' },
+    { pat:'MAIL_PASSWORD', sev:'critical', label:'Mail password' },
+    { pat:'MAIL_HOST', sev:'high', label:'Mail host' },
+    { pat:'slack_token', sev:'critical', label:'Slack token' },
+    { pat:'-----BEGIN RSA PRIVATE KEY-----', sev:'critical', label:'RSA key' },
+    { pat:'-----BEGIN OPENSSH PRIVATE KEY-----', sev:'critical', label:'OpenSSH key' },
+    { pat:'-----BEGIN DSA PRIVATE KEY-----', sev:'critical', label:'DSA key' },
+    { pat:'-----BEGIN EC PRIVATE KEY-----', sev:'critical', label:'EC key' },
+    { pat:'password=', sev:'high', label:'Password field' },
+    { pat:'jdbc:', sev:'critical', label:'JDBC string' },
+    { pat:'mongodb://', sev:'critical', label:'MongoDB URI' },
+    { pat:'postgres://', sev:'critical', label:'Postgres URI' },
+    { pat:'mysql://', sev:'critical', label:'MySQL URI' },
+    { pat:'redis://', sev:'critical', label:'Redis URI' },
+    { pat:'s3://', sev:'critical', label:'S3 URI' },
+    { pat:'gs://', sev:'critical', label:'GCS URI' },
+    { pat:'access_token', sev:'critical', label:'Access token' },
+    { pat:'refresh_token', sev:'critical', label:'Refresh token' },
+    { pat:'api_key', sev:'high', label:'API key' },
+    { pat:'API_KEY', sev:'high', label:'API key' },
+    { pat:'sendgrid', sev:'high', label:'SendGrid' },
+    { pat:'twilio', sev:'high', label:'Twilio key' },
+    { pat:'auth0', sev:'high', label:'Auth0 config' },
+    { pat:'okta', sev:'high', label:'Okta config' },
+    { pat:'jenkins', sev:'medium', label:'Jenkins' },
+    { pat:'sonarqube', sev:'medium', label:'SonarQube' },
+    { pat:'nexus', sev:'medium', label:'Nexus config' },
+    { pat:'grafana', sev:'medium', label:'Grafana' },
+    { pat:'prometheus', sev:'medium', label:'Prometheus' },
+    { pat:'kibana', sev:'medium', label:'Kibana' },
+    { pat:'elastic', sev:'medium', label:'Elasticsearch' },
+    { pat:'firebase', sev:'high', label:'Firebase config' },
+    { pat:'apiVersion', sev:'medium', label:'K8s version' },
+    { pat:'kind: Deployment', sev:'medium', label:'K8s deployment' },
+    { pat:'kind: Secret', sev:'critical', label:'K8s secret' },
+    { pat:'heroku_api', sev:'critical', label:'Heroku key' },
+    { pat:'HEROKU', sev:'high', label:'Heroku config' },
+    { pat:'STRIPE_KEY', sev:'critical', label:'Stripe env key' },
+    { pat:'PAYPAL', sev:'high', label:'PayPal config' },
+    { pat:'JWT_SECRET', sev:'critical', label:'JWT secret' },
+    { pat:'ENCRYPTION_KEY', sev:'critical', label:'Encryption key' },
+    { pat:'MASTER_KEY', sev:'critical', label:'Master key' },
+    { pat:'ROOT_PASSWORD', sev:'critical', label:'Root password' },
+    { pat:'ADMIN_PASSWORD', sev:'critical', label:'Admin password' },
+    { pat:'OAUTH_TOKEN', sev:'critical', label:'OAuth token' },
+    { pat:'eyJhbGciOi', sev:'high', label:'JWT eyJ' },
+    { pat:'eyJ0eXAiOiJKV1Qi', sev:'high', label:'JWT token' },
+    { pat:'github.com/', sev:'medium', label:'GitHub ref' },
+    { pat:'bucket=', sev:'high', label:'S3 bucket' },
+    { pat:'AZURE_STORAGE', sev:'high', label:'Azure storage' },
+    { pat:'AZURE_CLIENT', sev:'critical', label:'Azure client' },
+    { pat:'AZURE_TENANT', sev:'critical', label:'Azure tenant' },
+    { pat:'alias=aws', sev:'medium', label:'AWS config' },
+    { pat:'region=', sev:'low', label:'AWS region' },
+    { pat:'output=', sev:'low', label:'AWS output' },
+    { pat:'"Version"', sev:'medium', label:'IAM policy' },
+    { pat:'"Effect":"Allow"', sev:'high', label:'IAM allow' },
+    { pat:'"Action"', sev:'low', label:'IAM action' },
+    { pat:'"Resource"', sev:'low', label:'IAM resource' },
+    { pat:'"Statement"', sev:'low', label:'IAM statement' },
+    { pat:'MONGO_URI', sev:'critical', label:'Mongo env URI' },
+    { pat:'REDIS_URL', sev:'critical', label:'Redis env URL' },
+    { pat:'DATABASE_URL', sev:'critical', label:'DB env URL' },
+    { pat:'CACHE_DRIVER', sev:'medium', label:'Cache driver' },
+    { pat:'SESSION_DRIVER', sev:'medium', label:'Session driver' },
+    { pat:'BROADCAST_DRIVER', sev:'medium', label:'Broadcast driver' },
+    { pat:'QUEUE_DRIVER', sev:'medium', label:'Queue driver' },
+    { pat:'MAIL_DRIVER', sev:'medium', label:'Mail driver' },
+    { pat:'MAIL_FROM_ADDRESS', sev:'medium', label:'Mail from' },
+    { pat:'LOG_CHANNEL', sev:'low', label:'Log channel' },
+    { pat:'APP_DEBUG', sev:'medium', label:'Debug mode' },
+    { pat:'APP_ENV', sev:'low', label:'App env' }
+  ];
+
+  var F404_STR = [
+    '404 not found','page not found','not found','error 404',
+    "doesn't exist",'does not exist','no page found',
+    'nothing here','file not found','resource not found',
+    'the page you','not be found','introuvable',
+    '404 | not found','404 - not found','404 \u2013 not found',
+    'page does not exist','could not be found',
+    'oops! that page','that page cannot','we looked everywhere',
+    'nothing found','0 results','no results',
+    'there are no','could not locate',
+    'page may have been moved','page may have moved',
+    'this page is not','page is not available',
+    'page cannot be displayed','cannot be displayed',
+    'no content','empty','access denied',
+    'has been removed','may have been removed',
+    'you are not authorized','not authorized',
+    'forbidden','you dont have permission',
+    'you do not have permission','permission denied',
+    'access forbidden','403 forbidden',
+    'redirecting','you will be redirected',
+    'please login','please log in',
+    'sign in','sign in required',
+    'redirect to login','login to continue',
+    'authentication required',
+    'page is temporarily unavailable','temporarily unavailable',
+    'service unavailable','503 service unavailable'
+  ];
+
+  var ORIGIN = location.origin;
+  var results = [];
+  var baseline = null;
+  var done = 0;
+  var TOTAL = FILES.length;
+  var CONCUR = 8;
+  var active = 0;
+  var queue = FILES.slice();
+  var ABORT = false;
+
+  function esc(s){
+    return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function kb(n){
+    return n >= 1024 ? (n/1024).toFixed(1)+'KB' : n+'B';
+  }
+
+  function simpleHash(s){
+    var h = 0x811c9dc5;
+    for(var i = 0; i < Math.min(s.length, 5000); i++){
+      h ^= s.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h.toString(16);
+  }
+
+  function extractTitle(body){
+    var m = /<title[^>]*>([^<]{1,120})<\/title>/i.exec(body);
+    return m ? m[1].trim().toLowerCase() : '';
+  }
+
+  function extractMetaDesc(body){
+    var m = /<meta[^>]*name=["']description["'][^>]*content=["']([^"']{1,200})["']/i.exec(body);
+    return m ? m[1].toLowerCase() : '';
+  }
+
+  function soft404Score(body, statusCode, contentType){
+    if(statusCode !== 200) return 0;
+    var low = body.toLowerCase().slice(0, 8000);
+    var hits = 0;
+    F404_STR.forEach(function(s){ if(low.indexOf(s) > -1) hits++; });
+    var title = extractTitle(body);
+    F404_STR.forEach(function(s){ if(title.indexOf(s) > -1) hits += 2; });
+    var desc = extractMetaDesc(body);
+    F404_STR.forEach(function(s){ if(desc.indexOf(s) > -1) hits += 2; });
+    if(contentType && contentType.indexOf('text/html') > -1 && low.length < 200) hits += 3;
+    if(title === '' && low.length < 100) hits += 2;
+    return Math.min(hits * 20, 100);
+  }
+
+  function isFakeByBaseline(body, len){
+    if(!baseline) return false;
+    if(simpleHash(body) === baseline.hash) return true;
+    var title = extractTitle(body);
+    if(baseline.len > 0){
+      var ratio = len / baseline.len;
+      if(ratio > 0.985 && ratio < 1.015){
+        if(!title || !baseline.title || title === baseline.title) return true;
+        if(baseline.title && title && title.indexOf(baseline.title) > -1) return true;
+      }
+    }
+    if(baseline.title && title && title === baseline.title) return true;
+    return false;
+  }
+
+  function matchSigs(body){
+    var found = [];
+    for(var i = 0; i < SIGS.length; i++){
+      if(body.indexOf(SIGS[i].pat) > -1)
+        found.push({label: SIGS[i].label, sev: SIGS[i].sev});
+    }
+    var seen = {};
+    return found.filter(function(f){
+      return seen[f.label] ? false : (seen[f.label] = true);
+    });
+  }
+
+  function fetchPath(path, timeout, cb){
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, timeout);
+    fetch(ORIGIN + '/' + path, {
+      signal: ctrl.signal,
+      redirect: 'follow',
+      cache: 'no-store'
+    })
+    .then(function(r){
+      clearTimeout(timer);
+      var status = r.status;
+      var finalUrl = r.url;
+      var ct = r.headers.get('content-type') || '';
+      return r.text().then(function(body){
+        var redirected = false;
+        try {
+          var rurl = new URL(r.url);
+          if(rurl.origin !== ORIGIN) redirected = true;
+        } catch(e) {}
+        return {status: status, url: finalUrl, body: body, contentType: ct, redirected: redirected};
+      });
+    })
+    .then(cb)
+    .catch(function(){ clearTimeout(timer); cb(null); });
+  }
+
+  function getBaseline(cb){
+    var probes = 3;
+    var probed = 0;
+    var baselines = [];
+    function probeNext(){
+      if(probed >= probes){
+        if(baselines.length){
+          var avgLen = Math.round(
+            baselines.reduce(function(s,b){ return s + b.len; }, 0) / baselines.length
+          );
+          baseline = {
+            len: avgLen,
+            hash: baselines[0].hash,
+            title: baselines[0].title,
+            count: baselines.length
+          };
+        } else {
+          baseline = null;
+        }
+        cb();
+        return;
+      }
+      var rand = '__probe_' + Math.random().toString(36).slice(2) + '_' + Date.now() + '__';
+      fetchPath(rand, 8000, function(r){
+        if(r && r.status === 200){
+          baselines.push({
+            len: r.body.length,
+            hash: simpleHash(r.body),
+            title: extractTitle(r.body)
+          });
+        }
+        probed++;
+        setTimeout(probeNext, 100);
+      });
+    }
+    probeNext();
+  }
+
+  function checkFile(path, cb){
+    if(ABORT) return cb(null);
+    fetchPath(path, 10000, function(r){
+      if(!r) return cb(null);
+      var status = r.status;
+      var body = r.body;
+      var len = body.length;
+      var ct = r.contentType;
+      try {
+        if(r.url){
+          var rpath = new URL(r.url).pathname.replace(/\/+$/, '');
+          var epath = ('/' + path).replace(/\/+$/, '');
+          if(rpath !== epath && status === 200){
+            var pathBase = path.replace(/\/+$/, '');
+            if(rpath.indexOf(pathBase) === -1 && rpath.indexOf('/' + pathBase) === -1) return cb(null);
+          }
+        }
+      } catch(e) {}
+      if(status === 403 || status === 401){
+        return cb({
+          path: path, status: status, len: len, ct: ct,
+          sigs: [], verdict: 'FORBIDDEN', conf: 70, delta: null
+        });
+      }
+      if(status !== 200) return cb(null);
+      var s404 = soft404Score(body, status, ct);
+      if(s404 >= 40) return cb(null);
+      if(isFakeByBaseline(body, len)) return cb(null);
+      var delta = null;
+      if(baseline && baseline.len > 0){
+        delta = len - baseline.len;
+      }
+      if(len < 10) return cb(null);
+      var sigs = matchSigs(body);
+      var verdict = sigs.length ? 'SENSITIVE' : 'OPEN';
+      var conf = 90;
+      if(len < 50 && !sigs.length){
+        conf = 40;
+        verdict = 'OPEN?';
+      }
+      var preview = null;
+      if(sigs.length){
+        var lines = body.split('\n').slice(0, 15);
+        var interesting = lines.filter(function(l){
+          return l.trim().length > 2 && l.indexOf('=') > -1 && l.indexOf('#') !== 0;
+        });
+        if(interesting.length) preview = interesting[0].trim().substring(0, 120);
+        if(!preview){
+          var nonEmpty = lines.filter(function(l){ return l.trim().length > 2; });
+          if(nonEmpty.length) preview = nonEmpty[0].trim().substring(0, 120);
+        }
+      }
+      cb({
+        path: path, status: status, len: len, delta: delta, ct: ct,
+        sigs: sigs, verdict: verdict, conf: conf,
+        preview: preview, s404score: s404
+      });
+    });
+  }
+
+  var old = document.getElementById('__fsp_ov__');
+  if(old) old.remove();
+  var old2 = document.getElementById('__fsp_main__');
+  if(old2) old2.remove();
+
+  var OV = document.createElement('div');
+  OV.id = '__fsp_ov__';
+  OV.style.cssText = 'position:fixed;top:14px;right:14px;width:340px;background:#06091a;border:1.5px solid #f59e0b;border-radius:14px;z-index:2147483647;font-family:monospace;color:#e2e8f0;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.92);user-select:none';
+  OV.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">' +
+    '<span style="font-size:16px">🔍</span>' +
+    '<b style="color:#f59e0b;font-size:13px;letter-spacing:.03em">File Scanner Pro</b>' +
+    '<span style="font-size:9px;color:#475569;margin-left:auto">v'+VER+' · '+AUTHOR+'</span>' +
+    '</div>' +
+    '<div id="__fsp_phase__" style="font-size:11px;color:#64748b;margin-bottom:8px">⏳ Fingerprinting baseline…</div>' +
+    '<div style="background:#0a1628;border-radius:6px;height:7px;overflow:hidden;margin-bottom:8px">' +
+    '<div id="__fsp_bar__" style="background:linear-gradient(90deg,#f59e0b,#ef4444);height:7px;width:0%;transition:width .25s ease;border-radius:6px"></div>' +
+    '</div>' +
+    '<div id="__fsp_stat__" style="font-size:10px;color:#475569">0 / '+TOTAL+'</div>' +
+    '<button id="__fsp_cancel__" style="margin-top:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;display:none">✕ Cancel</button>';
+  document.body.appendChild(OV);
+
+  function updateProgress(msg){
+    if(!document.body.contains(OV)) return;
+    var bar = OV.querySelector('#__fsp_bar__');
+    var stat = OV.querySelector('#__fsp_stat__');
+    var phase = OV.querySelector('#__fsp_phase__');
+    var cancel = OV.querySelector('#__fsp_cancel__');
+    if(bar) bar.style.width = Math.round(done / TOTAL * 100) + '%';
+    if(stat) stat.textContent = msg || (done + ' / ' + TOTAL + ' — found: ' + results.length);
+    if(phase && !msg && done > 0) phase.textContent = '🔎 Scanning files…';
+    if(cancel) cancel.style.display = (done > 0 && active > 0) ? 'block' : 'none';
+  }
+
+  var cancelBtn = OV.querySelector('#__fsp_cancel__');
+  if(cancelBtn) cancelBtn.onclick = function(){ ABORT = true; cancelBtn.textContent = '⏹ Cancelling…'; };
+
+  var uiBuilt = false;
+  function next(){
+    if(!queue.length && active === 0){
+      if(!uiBuilt){ uiBuilt = true; buildUI(); }
+      return;
+    }
+    if(ABORT){
+      if(active === 0 && !uiBuilt){ uiBuilt = true; buildUI(); }
+      return;
+    }
+    while(active < CONCUR && queue.length && !ABORT){
+      active++;
+      (function(path){
+        checkFile(path, function(r){
+          active--;
+          done++;
+          if(r) results.push(r);
+          updateProgress();
+          next();
+        });
+      })(queue.shift());
+    }
+  }
+
+  getBaseline(function(){
+    var phase = OV.querySelector('#__fsp_phase__');
+    var stat = OV.querySelector('#__fsp_stat__');
+    if(phase) phase.textContent = '🔎 Scanning ' + TOTAL + ' paths…';
+    if(stat) stat.textContent = baseline
+      ? '⚠ Baseline: '+baseline.count+' probes, len='+baseline.len+' hash='+baseline.hash.slice(0,8)+'…'
+      : '✓ Server returns proper 404s';
+    setTimeout(next, 300);
+  });
+
+  function buildUI(){
+    if(OV && OV.parentNode) OV.remove();
+    results.sort(function(a, b){
+      var ord = {'SENSITIVE':0, 'FORBIDDEN':1, 'OPEN':2, 'OPEN?':3};
+      return (ord[a.verdict] || 9) - (ord[b.verdict] || 9);
+    });
+    var sens = results.filter(function(r){ return r.verdict === 'SENSITIVE'; });
+    var open = results.filter(function(r){ return r.verdict === 'OPEN' || r.verdict === 'OPEN?'; });
+    var forb = results.filter(function(r){ return r.verdict === 'FORBIDDEN'; });
+
+    function vCol(v){
+      return {SENSITIVE:'#ef4444', FORBIDDEN:'#f59e0b', OPEN:'#10b981', 'OPEN?':'#64748b'}[v] || '#94a3b8';
+    }
+    function sevCol(s){
+      return {critical:'#ef4444', high:'#f97316', medium:'#f59e0b', low:'#22d3ee'}[s] || '#94a3b8';
+    }
+
+    var P = document.createElement('div');
+    P.id = '__fsp_main__';
+    P.style.cssText = 'position:fixed;top:14px;right:14px;width:520px;max-height:92vh;background:#06091a;border:1.5px solid #f59e0b;border-radius:14px;z-index:2147483647;font-family:system-ui,sans-serif;color:#e2e8f0;box-shadow:0 28px 80px rgba(0,0,0,.95);display:flex;flex-direction:column;overflow:hidden';
+
+    var HD = document.createElement('div');
+    HD.style.cssText = 'background:linear-gradient(90deg,#92400e,#f97316);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0';
+    HD.innerHTML =
+      '<div>' +
+      '<b style="font-size:14px;letter-spacing:.02em">🔍 File Scanner Pro <span style="font-size:10px;opacity:.6">v'+VER+'</span></b>' +
+      '<div style="font-size:9px;opacity:.55;margin-top:2px">'+esc(ORIGIN)+' · by '+AUTHOR+'</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px">' +
+      '<button id="__fsp_minimize__" style="background:rgba(0,0,0,.35);border:none;color:#fff;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:13px;line-height:1;flex-shrink:0">−</button>' +
+      '<button id="__fsp_close__" style="background:rgba(0,0,0,.35);border:none;color:#fff;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:17px;line-height:1;flex-shrink:0">×</button>' +
+      '</div>';
+    P.appendChild(HD);
+
+    var ST = document.createElement('div');
+    ST.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px;background:rgba(0,0,0,.5);flex-shrink:0';
+    [
+      ['📋 Scanned', TOTAL, '#94a3b8'],
+      ['🔴 Sensitive', sens.length, '#ef4444'],
+      ['🟢 Open', open.length, '#10b981'],
+      ['🟡 Forbidden', forb.length, '#f59e0b']
+    ].forEach(function(x){
+      var d = document.createElement('div');
+      d.style.cssText = 'text-align:center;padding:7px 3px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px';
+      d.innerHTML = '<div style="font-size:19px;font-weight:800;color:'+x[2]+'">'+x[1]+'</div>' +
+        '<div style="font-size:9px;color:#475569;margin-top:2px">'+x[0]+'</div>';
+      ST.appendChild(d);
+    });
+    P.appendChild(ST);
+
+    var BI = document.createElement('div');
+    if(baseline){
+      BI.style.cssText = 'padding:4px 12px;background:rgba(245,158,11,.07);border-bottom:1px solid rgba(245,158,11,.14);font-size:9px;color:#92400e;font-family:monospace;flex-shrink:0';
+      BI.textContent = '⚠ Soft-404 baseline active — '+baseline.count+' probes · len:'+baseline.len+' hash:'+baseline.hash.slice(0,10)+'… title:"'+(baseline.title||'\u2014').slice(0,40)+'"';
+    } else {
+      BI.style.cssText = 'padding:4px 12px;background:rgba(16,185,129,.05);border-bottom:1px solid rgba(16,185,129,.13);font-size:9px;color:#065f46;font-family:monospace;flex-shrink:0';
+      BI.textContent = '✓ Server returns proper 404s — no baseline correction needed.';
+    }
+    P.appendChild(BI);
+
+    var CO = document.createElement('div');
+    CO.style.cssText = 'overflow-y:auto;flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:3px';
+    if(!results.length){
+      CO.innerHTML = '<div style="text-align:center;padding:40px;color:#1e3a5f">' +
+        '<div style="font-size:36px;margin-bottom:10px">✅</div>' +
+        '<div style="color:#10b981;font-size:13px;font-weight:600">Nothing found — server looks clean</div>' +
+        '<div style="color:#1e3a5f;font-size:10px;margin-top:6px">Scanned '+TOTAL+' paths</div>' +
+        '</div>';
+    } else {
+      function addSection(title, list){
+        if(!list.length) return;
+        var hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:10px;color:#475569;padding:5px 2px 3px;font-weight:700;text-transform:uppercase;letter-spacing:.06em';
+        hdr.textContent = title + ' (' + list.length + ')';
+        CO.appendChild(hdr);
+        list.forEach(function(r){
+          var vc = vCol(r.verdict);
+          var row = document.createElement('div');
+          row.style.cssText = 'background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid '+vc+';padding:8px 10px;display:flex;flex-direction:column;gap:4px';
+          var top = document.createElement('div');
+          top.style.cssText = 'display:flex;align-items:center;gap:5px;flex-wrap:wrap';
+          var pathSpan = document.createElement('span');
+          pathSpan.style.cssText = 'font-family:monospace;font-size:11px;color:#cbd5e1;flex:1;word-break:break-all';
+          pathSpan.textContent = '/' + r.path;
+          var bVerdict = document.createElement('span');
+          bVerdict.style.cssText = 'font-size:9px;padding:2px 8px;border-radius:4px;font-weight:700;background:'+vc+'22;color:'+vc+';flex-shrink:0';
+          bVerdict.textContent = r.verdict;
+          var bSize = document.createElement('span');
+          bSize.style.cssText = 'font-size:9px;color:#475569;font-family:monospace;flex-shrink:0';
+          var sizeText = kb(r.len);
+          if(r.delta !== null){
+            var sign = r.delta >= 0 ? '+' : '';
+            sizeText += ' (\u0394' + sign + kb(Math.abs(r.delta)) + ')';
+          }
+          bSize.textContent = sizeText;
+          var bStatus = document.createElement('span');
+          bStatus.style.cssText = 'font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);color:#64748b;flex-shrink:0';
+          bStatus.textContent = r.status;
+          var cpBtn = document.createElement('span');
+          cpBtn.textContent = '📋';
+          cpBtn.title = 'Copy URL';
+          cpBtn.style.cssText = 'cursor:pointer;font-size:11px;opacity:.25;flex-shrink:0;transition:opacity .15s';
+          cpBtn.onmouseover = function(){ this.style.opacity = '1'; };
+          cpBtn.onmouseout = function(){ this.style.opacity = '.25'; };
+          cpBtn.onclick = function(e){
+            e.stopPropagation();
+            navigator.clipboard.writeText(ORIGIN + '/' + r.path).catch(function(){});
+            cpBtn.textContent = '✅';
+            setTimeout(function(){ cpBtn.textContent = '📋'; }, 1500);
+          };
+          var lkBtn = document.createElement('a');
+          lkBtn.href = ORIGIN + '/' + r.path;
+          lkBtn.target = '_blank';
+          lkBtn.rel = 'noopener';
+          lkBtn.textContent = '↗';
+          lkBtn.title = 'Open in new tab';
+          lkBtn.style.cssText = 'font-size:13px;color:'+vc+';text-decoration:none;flex-shrink:0;opacity:.65';
+          top.appendChild(pathSpan);
+          top.appendChild(bVerdict);
+          top.appendChild(bSize);
+          top.appendChild(bStatus);
+          top.appendChild(cpBtn);
+          top.appendChild(lkBtn);
+          row.appendChild(top);
+          if(r.sigs && r.sigs.length){
+            var sigRow = document.createElement('div');
+            sigRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;margin-top:1px';
+            r.sigs.forEach(function(sig){
+              var sc = sevCol(sig.sev);
+              var tag = document.createElement('span');
+              tag.style.cssText = 'font-size:9px;padding:2px 7px;background:'+sc+'22;border:1px solid '+sc+'44;border-radius:3px;color:'+sc;
+              tag.textContent = sig.label;
+              sigRow.appendChild(tag);
+            });
+            row.appendChild(sigRow);
+          }
+          if(r.preview){
+            var prev = document.createElement('div');
+            prev.style.cssText = 'font-family:monospace;font-size:9px;color:#64748b;background:#020812;padding:4px 8px;border-radius:5px;word-break:break-all;margin-top:2px;border-left:2px solid #1e3a5f';
+            prev.textContent = r.preview + '\u2026';
+            row.appendChild(prev);
+          }
+          if(r.ct){
+            var ctRow = document.createElement('div');
+            ctRow.style.cssText = 'font-size:8px;color:#475569;font-family:monospace;margin-top:1px';
+            ctRow.textContent = 'Type: ' + (r.ct.length > 60 ? r.ct.slice(0, 60) + '\u2026' : r.ct);
+            row.appendChild(ctRow);
+          }
+          CO.appendChild(row);
+        });
+      }
+      addSection('🔴 Sensitive', sens);
+      addSection('🟢 Open / Accessible', open);
+      addSection('🟡 Forbidden (exists)', forb);
+    }
+    P.appendChild(CO);
+
+    var FT = document.createElement('div');
+    FT.style.cssText = 'padding:8px;border-top:1px solid #0f1f35;display:flex;gap:5px;flex-shrink:0';
+    function mkBtn(text, style, fn){
+      var b = document.createElement('button');
+      b.textContent = text;
+      b.style.cssText = 'flex:1;padding:8px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;'+style;
+      b.onclick = fn;
+      return b;
+    }
+    var btnCopy = mkBtn('📋 Copy All',
+      'border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#94a3b8',
+      function(){
+        var txt = '# File Scanner Pro v'+VER+' — '+AUTHOR+'\n' +
+          '# Target: '+ORIGIN+'\n' +
+          '# Date: '+new Date().toLocaleString()+'\n' +
+          '# Soft-404 baseline: '+(baseline?'YES ('+baseline.count+' probes, len='+baseline.len+')':'NO')+'\n' +
+          '# Total: '+TOTAL+' scanned, '+results.length+' found\n' +
+          '='.repeat(60)+'\n\n' +
+          results.map(function(r){
+            var line = '['+r.verdict+'] '+ORIGIN+'/'+r.path + ' ('+r.status+', '+kb(r.len)+')';
+            if(r.sigs.length) line += '\n \u2192 '+r.sigs.map(function(s){ return s.label+' ['+s.sev+']'; }).join(', ');
+            if(r.preview) line += '\n  '+r.preview;
+            return line;
+          }).join('\n');
+        navigator.clipboard.writeText(txt).then(function(){
+          btnCopy.textContent = '✅ Copied!';
+          setTimeout(function(){ btnCopy.textContent = '📋 Copy All'; }, 2000);
+        });
+      });
+    var btnJson = mkBtn('{} JSON',
+      'border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#10b981',
+      function(){
+        var d = {
+          meta: {target: ORIGIN, date: new Date().toISOString(), scanned: TOTAL, found: results.length, tool: 'File Scanner Pro v'+VER, author: AUTHOR, baseline: baseline},
+          results: results
+        };
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], {type:'application/json'}));
+        a.download = 'filescan-'+location.hostname+'-'+Date.now()+'.json';
+        a.click();
+      });
+    var btnOpen = mkBtn('🔗 Open Sensitive',
+      'border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#ef4444',
+      function(){ sens.slice(0, 10).forEach(function(r){ window.open(ORIGIN+'/'+r.path, '_blank'); }); });
+    FT.appendChild(btnCopy);
+    FT.appendChild(btnJson);
+    if(sens.length) FT.appendChild(btnOpen);
+    P.appendChild(FT);
+    document.body.appendChild(P);
+
+    var closeBtn = P.querySelector('#__fsp_close__');
+    if(closeBtn) closeBtn.onclick = function(){ P.remove(); };
+    var minimizeBtn = P.querySelector('#__fsp_minimize__');
+    if(minimizeBtn) minimizeBtn.onclick = function(){
+      if(CO.style.display !== 'none'){
+        CO.style.display = 'none';
+        ST.style.display = 'none';
+        BI.style.display = 'none';
+        FT.style.display = 'none';
+        P.style.width = 'auto';
+        P.style.maxHeight = 'auto';
+        minimizeBtn.textContent = '□';
+      } else {
+        CO.style.display = '';
+        ST.style.display = '';
+        BI.style.display = '';
+        FT.style.display = '';
+        P.style.width = '520px';
+        P.style.maxHeight = '92vh';
+        minimizeBtn.textContent = '−';
+      }
+    };
+  }
+})();
